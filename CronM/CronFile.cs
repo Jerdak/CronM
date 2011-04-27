@@ -7,8 +7,14 @@ using System.Text.RegularExpressions;
 
 namespace CronM
 {
+	/** Cron settings file
+		@desrip
+			CronFile handles parsing the Cron settings.  I tried to use the existing Cron format
+			except that we don't parse ranges, yet.
+	*/
 	class CronFile
 	{
+		//Tasks
 		public List<CronTask> Tasks { get; set; }
 		
 		public CronFile()
@@ -16,6 +22,7 @@ namespace CronM
 			Tasks = new List<CronTask>();	
 		}
 
+		///Utility function to remove inline |white space| > 1.
 		private string RemoveDuplicateWhiteSpace(string input)
 		{   
 			return Regex.Replace(input, @"[\s]+", " ", RegexOptions.Singleline | RegexOptions.IgnoreCase);

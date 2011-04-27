@@ -9,12 +9,30 @@ using System.ComponentModel;
 
 namespace CronM
 {
+	/**	Cron core
+		@descrip
+			The core is reponsible for running the task timer.  Cron tasks
+			are evaluated every 5 seconds.  This can probably be relaxed as
+			the resolution of the original Cron is 1 minute.
+
+			Tasks are spawned in a self-closing cmd shell, error catching is
+			non-existent.  :) 
+		@todo
+			- Allow for the evaluation of time ranges per task.  Currently only
+				a single value is allowed per column in the task description.
+	*/
 	class CronCore
 	{
+		//Task match bit flags
 		enum TaskMatch { Unset=0x00,Minute = 0x01, Hour = 0x02, DayOfMonth = 0x04, Month = 0x08, DayOfWeek = 0x10 ,Complete = 0x1F};
 
+		//Cron settings file
 		public CronFile CronSettings { get; set; }
+		
+		//Main timer
 		public System.Timers.Timer Timer { get; set; }
+		
+		//Currently active tasks (unused)
 		private Dictionary<int,CronTask>  ActiveTasks{ get; set; }
 
 		public CronCore()
