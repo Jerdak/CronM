@@ -1,0 +1,9 @@
+# m h dom mon dow user  command
+#* *    * 4 *   root     @echo Test Command 1 > testcmd1.txt
+* 13    * * *   root     C:\Python26\Python.exe C:\Projects\Scripts\HelloWorld.py > testcmd2.txt
+#17 *    * 4 *   root    @echo Test Command 3 > testcmd3.txt
+#25 6    * * *   root    @echo Test Command 4 > testcmd4.txt
+#47 7   * 4 7   root     @echo Test Command 5 > testcmd5.txt
+#52 8    1 * *   root    @echo Test Command 6 > testcmd6.txt
+#17 10   * * 2   root    @echo Test Command 7 > testcmd7.txt
+#
