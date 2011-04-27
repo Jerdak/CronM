@@ -1,0 +1,20 @@
+Managed version of Cron for Windows
+===================================
+
+This is, by no means, meant as a replacement for Cron.  It recently became necessary to
+gin up a simplistic task scheduler for Windows systems lacking the admin rights
+necessary to modify the Task Scheduler.
+
+Rather than creating a fanciful GUI version I decided to make a simplistic copy
+of Cron, text file and all.
+
+To date this project runs as an executable, not a Windows service.
+
+
+Requirements:
+-------------
+Visual Studio 2008
+
+Installing:
+-----------
+Nothing fancy here.  Copy the repo, compile, run.
