@@ -1,20 +1,16 @@
 Managed version of Cron for Windows
-===================================
 
-This is, by no means, meant as a replacement for Cron.  It recently became necessary to
-gin up a simplistic task scheduler for Windows systems lacking the admin rights
-necessary to modify the Task Scheduler.
+## Description
 
-Rather than creating a fanciful GUI version I decided to make a simplistic copy
-of Cron, text file and all.
+CronM is a simple Windows-based version of the *Nix job scheduler, [Cron](http://en.wikipedia.org/wiki/Cron).
 
-To date this project runs as an executable, not a Windows service.
+Cron jobs are added to a [crontab](http://en.wikipedia.org/wiki/Cron#Format) file that in this case is just a text file stored
+at the CronM root.  
 
+CronM retains the same the same command line interface of the original.
 
-Requirements:
--------------
+## Requirements
 Visual Studio 2008
 
-Installing:
------------
+## Installation
 Nothing fancy here.  Copy the repo, compile, run.
