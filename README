@@ -2,9 +2,9 @@ Managed version of Cron for Windows
 
 ## Description
 
-CronM is a simple Windows-based version of the *Nix job scheduler, [Cron](http://en.wikipedia.org/wiki/Cron).
+CronM is a simple Windows-based version of the *Nix job scheduler, Cron(http://en.wikipedia.org/wiki/Cron).
 
-Cron jobs are added to a [crontab](http://en.wikipedia.org/wiki/Cron#Format) file that in this case is just a text file stored
+Cron jobs are added to a crontab(http://en.wikipedia.org/wiki/Cron#Format) file that in this case is just a text file stored
 at the CronM root.  
 
 CronM retains the same the same command line interface of the original.
