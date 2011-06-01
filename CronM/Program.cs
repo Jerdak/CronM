@@ -18,14 +18,12 @@ namespace CronM
 				return;
 			}
 
-			Console.WriteLine("\nWelcome to CronW (Cron for Windows)");
-			Console.WriteLine("  - Currently ranges are [not working]\n");
+			Console.WriteLine("\nWelcome to CronM (Cron for Windows)");
 			Console.WriteLine("  - Press 'q' and hit 'enter' to QUIT.");
 
 			CronCore core = new CronCore();
 			core.Start();
 
-			
 			
 			while (Console.Read() != 'q') ;
 		}
