@@ -28,45 +28,63 @@ namespace CronM
 
 		//Cron settings file
 		public CronFile CronSettings { get; set; }
-		
+
 		//Main timer
-		public System.Timers.Timer Timer { get; set; }
+		private System.Timers.Timer Timer { get; set; }
 		
+		//Configuration Timer
+		private System.Timers.Timer ConfigTimer { get; set; }
+
 		//Currently active tasks (unused)
 		private Dictionary<int,CronTask>  ActiveTasks{ get; set; }
 
 		public CronCore()
 		{
-			CronSettings = new CronFile();
-			CronSettings.Load("./cron.txt");
+			CronSettings = new CronFile("./crontab");
+			CronSettings.Load();
 			CronSettings.DebugTasks();
 
 			ActiveTasks = new Dictionary<int, CronTask>();
 		}
 
+		//Initialize Timers
 		public void Start()
 		{
-			{	//Start worker thread
+			{	//Start worker thread (updates every second)
 				Timer = new System.Timers.Timer();
 				Timer.Elapsed += new ElapsedEventHandler(this.OnTimerEvent);
 				Timer.Interval = 1000;
 				Timer.Enabled = true;
 			}
+
+			{	//Configuration timer(updates every 10 seconds)
+				ConfigTimer = new System.Timers.Timer();
+				ConfigTimer.Elapsed += new ElapsedEventHandler(this.OnConfigurationEvent);
+				ConfigTimer.Interval = 1000;
+				ConfigTimer.Enabled = true;
+			}
 		}
+
 		static void ParseMatch(String value, int expected, ref TaskMatch ret,TaskMatch match){
 			if (value[0] == '*')
 			{
 				ret |= match;
 				return;
 			}
-
-			int val = Convert.ToInt32(value);
-			if (val == expected)
+			String []values = value.Split(',');
+			foreach (String val in values)
 			{
-				ret |= match;
+				int iVal = Convert.ToInt32(val);
+				if (iVal == expected)
+				{
+					ret |= match;
+					return;
+				}
 			}
 			return;
 		}
+
+
 		static TaskMatch MatchTasks(CronTask task)
 		{
 			//enum TaskMatch { Unset=0x00,Minute = 0x01, Hour = 0x02, DayOfMonth = 0x04, Month = 0x08, DayOfWeek = 0x16 ,Complete = 0x31};
@@ -75,9 +93,8 @@ namespace CronM
 
 			//Console.WriteLine("Diff: " + ((TimeSpan)(dt - task.LastRun)).TotalSeconds.ToString());
 			if ((dt - task.LastRun).TotalSeconds < 60) return ret;
-			ParseMatch(task.Minute, dt.Minute,ref ret, TaskMatch.Minute);
-			//Console.WriteLine("Minutes: " + task.Minute + "," +dt.Minute);
 			
+			ParseMatch(task.Minute, dt.Minute,ref ret, TaskMatch.Minute);
 			ParseMatch(task.Hour,	dt.Hour, ref ret, TaskMatch.Hour);
 			ParseMatch(task.DayOfMonth, dt.Day, ref ret, TaskMatch.DayOfMonth);
 			ParseMatch(task.Month, dt.Month, ref ret, TaskMatch.Month);
@@ -85,9 +102,16 @@ namespace CronM
 			return ret;
 			
 		}
-		void OnProcessEvent(object source, ElapsedEventArgs args)
+		void OnConfigurationEvent(object source, ElapsedEventArgs args)
 		{
-
+			CronSettings.File.Refresh();
+			if (CronSettings.LastModified != CronSettings.File.LastWriteTime)
+			{
+				Console.WriteLine("Cron settings have changed, reloading tasks.");
+				Timer.Stop();
+				CronSettings.Load();
+				Timer.Start();
+			}
 		}
 		void OnTimerEvent(object source, ElapsedEventArgs args)
 		{
@@ -97,7 +121,7 @@ namespace CronM
 				TaskMatch final = MatchTasks(task);
 				if ((final & completeMask) == completeMask)
 				{
-					Console.WriteLine("Valid Task[" + task.UniqueID.ToString() + "]: " + task.Command);
+					Console.WriteLine("Running Cmd[" + task.UniqueID.ToString() + "]: " + task.Command);
 					Process proc = new Process();
 					proc.StartInfo.UseShellExecute = false;
 					proc.StartInfo.CreateNoWindow = false;
@@ -106,14 +130,11 @@ namespace CronM
 					proc.Start();
 
 					task.LastRun = DateTime.Now;
+					
+					//Floor to last valid minute(max resolution of timer)
+					TimeSpan tmp = new TimeSpan(0,0,task.LastRun.Second);
+					task.LastRun -= tmp;
 				}
-				//if (test) Console.WriteLine("Valid Task["+task.UniqueID.ToString() + "]: "  + task.Command);
-				//Console.WriteLine("Complete: " + completeMask.ToString() + "," + ((int)TaskMatch.Complete).ToString());
-				
-				//if (Convert.ToInt32(task.Minute) == dt.Minute || task.Minute[0] == '*')
-				//{
-				//	Console.WriteLine("Running Task: " + task.Command);
-				//}
 			}
 		}
 	}
